@@ -5,6 +5,8 @@
 #-------------------------------------------------
 
 QT       += core gui
+QT       += charts
+CONFIG   += c++14
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -24,8 +26,22 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+    sysinfo.cpp \
+    sysinfowidget.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += mainwindow.h \
+    sysinfo.h \
+    sysinfowidget.h
+
+windows {
+    SOURCES += sysinfowindowsimpl.cpp
+    HEADERS += sysinfowindowsimpl.h
+}
+
+linux {
+    SOURCES += sysinfolinuximpl.cpp
+    HEADERS += sysinfolinuximpl.h
+}
 
 FORMS    += mainwindow.ui
