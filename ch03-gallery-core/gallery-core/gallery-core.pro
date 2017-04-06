@@ -30,14 +30,16 @@ SOURCES += album.cpp \
     picture.cpp \
     databasemanager.cpp \
     albumdao.cpp \
-    picturedao.cpp
+    picturedao.cpp \
+    albummodel.cpp
 
 HEADERS += album.h\
         gallery-core_global.h \
     picture.h \
     databasemanager.h \
     albumdao.h \
-    picturedao.h
+    picturedao.h \
+    albummodel.h
 
 target.path = /usr/lib
 INSTALLS += target

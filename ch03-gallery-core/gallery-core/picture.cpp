@@ -14,6 +14,26 @@ Picture::Picture(const QUrl &fileUrl) :
 
 }
 
+int Picture::id() const
+{
+    return mId;
+}
+
+void Picture::setId(int id)
+{
+    mId = id;
+}
+
+int Picture::albumId() const
+{
+    return mAlbimId;
+}
+
+void Picture::setAlbumId(int albumId)
+{
+    mAlbimId = albumId;
+}
+
 QUrl Picture::fileUrl() const
 {
     return mFileUrl;

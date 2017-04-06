@@ -7,6 +7,8 @@
 #include "album.h"
 #include "albumdao.h"
 
+using namespace std;
+
 AlbumDao::AlbumDao(QSqlDatabase &database) :
     mDatabase(database)
 {
@@ -19,6 +21,7 @@ void AlbumDao::init() const
     {
         QSqlQuery query(mDatabase);
         query.exec("CREATE TABLE albums (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT)");
+        DatabaseManager::debugQuery(query);
     }
 }
 
@@ -30,20 +33,44 @@ void AlbumDao::addAlbum(Album &album) const
     query.bindValue(":name", album.name());
     query.exec();
     album.setId(query.lastInsertId().toInt());
+    DatabaseManager::debugQuery(query);
 }
 
-QVector<Album *> AlbumDao::albums() const
+void AlbumDao::updateAlbum(const Album &album) const
+{
+    QSqlQuery query(mDatabase);
+
+    query.prepare("UPDATE albums SET name = (:name) WHERE id = (:id)");
+    query.bindValue(":name", album.name());
+    query.bindValue(":id", album.id());
+    query.exec();
+    DatabaseManager::debugQuery(query);
+}
+
+void AlbumDao::removeAlbum(int id) const
+{
+    QSqlQuery query(mDatabase);
+    query.prepare("DELETE FROM albums WHERE id = (:id)");
+    query.bindValue(":id", id);
+    query.exec();
+    DatabaseManager::debugQuery(query);
+}
+
+std::unique_ptr<std::vector<std::unique_ptr<Album> > > AlbumDao::albums() const
 {
     QSqlQuery query("SELECT * FROM albums", mDatabase);
     query.exec();
-    QVector<Album *> list;
+    DatabaseManager::debugQuery(query);
+
+    unique_ptr<vector<unique_ptr<Album>>> list(new vector<unique_ptr<Album>>());
 
     while (query.next()) {
-        Album* album = new Album();
+        unique_ptr<Album> album(new Album());
         album->setId(query.value("id").toInt());
         album->setName(query.value("name").toString());
-        list.append(album);
+        list->push_back(move(album));
     }
 
     return list;
 }
+

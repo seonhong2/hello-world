@@ -1,8 +1,19 @@
-#include <QSqlDatabase>
-
 #include "databasemanager.h"
 
+#include <QSqlDatabase>
+#include <QSqlQuery>
+#include <QDebug>
+#include <QSqlError>
 
+void DatabaseManager::debugQuery(const QSqlQuery &query)
+{
+    if (query.lastError().type() == QSqlError::ErrorType::NoError) {
+        qDebug() << "Query OK:" << query.lastQuery();
+    } else {
+        qWarning() << "Query KO:" << query.lastError().text();
+        qWarning() << "Query text:" << query.lastQuery();
+    }
+}
 
 DatabaseManager &DatabaseManager::instance()
 {
@@ -13,15 +24,17 @@ DatabaseManager &DatabaseManager::instance()
 DatabaseManager::~DatabaseManager()
 {
     mDatabase->close();
-    delete mDatabase;
 }
 
 DatabaseManager::DatabaseManager(const QString &path) :
     mDatabase(new QSqlDatabase(QSqlDatabase::addDatabase("QSQLITE"))),
-    albumDao(*mDatabase)
+    albumDao(*mDatabase),
+    pictureDao(*mDatabase)
 {
     mDatabase->setDatabaseName(path);
-    mDatabase->open();
+    bool openStatus = mDatabase->open();
+    qDebug() << "Database connection:" << (openStatus ? "OK" : "Error");
 
     albumDao.init();
+    pictureDao.init();
 }
